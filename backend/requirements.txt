@@ -1,0 +1,11 @@
+fastapi
+uvicorn
+websockets
+sqlalchemy
+python-multipart
+python-dotenv
+pydantic
+openai
+alembic
+reportlab
+httpx

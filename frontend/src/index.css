@@ -2,8 +2,41 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer utilities {
+  .glass-card {
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    transition: border-color 0.3s ease, transform 0.2s ease;
+  }
+  .glass-card:hover {
+    border-color: rgba(255, 255, 255, 0.15);
+  }
+  .glass-card:active {
+    transform: scale(0.98);
+  }
+  .primary-glow {
+    box-shadow: 0 0 20px rgba(109, 94, 247, 0.25);
+  }
+  .ai-pulse {
+    animation: pulse-ring 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+  @keyframes pulse-ring {
+    0%, 100% { opacity: 0.15; transform: scale(1); }
+    50% { opacity: 0.3; transform: scale(1.05); }
+  }
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
+
+
 @layer base {
   body {
-    @apply antialiased text-gray-900 bg-gray-50;
+    @apply antialiased text-on-surface bg-background;
   }
 }

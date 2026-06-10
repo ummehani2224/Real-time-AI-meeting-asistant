@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Mic, Square, Download, ChevronLeft, Send, CheckCircle, Mail } from 'lucide-react';
 import { api } from '../services/api';
 import { useMeetingSocket } from '../hooks/useMeetingSocket';
 
@@ -90,86 +89,100 @@ export default function MeetingRoom({ isNew }) {
   };
 
   // Determine what to show
-  const displayTranscript = isNew || isRecording ? transcript : []; // Real app would fetch past transcripts
+  const displayTranscript = isNew || isRecording ? transcript : []; 
   const displaySummary = summary || meetingDetails?.summary || "Meeting summary will appear here...";
   const displayActionItems = meetingDetails?.action_items || [];
 
   return (
-    <div className="max-w-6xl mx-auto space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
-        <div className="flex items-center gap-4">
+    <div className="space-y-lg max-w-container-max mx-auto">
+      {/* Header Card */}
+      <div className="glass-card p-md rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-md">
+        <div className="flex items-center gap-sm">
           <button 
             onClick={() => navigate('/')}
-            className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full transition-colors"
+            className="material-symbols-outlined text-on-surface-variant hover:bg-white/5 transition-colors p-sm rounded-full active:scale-95 duration-200"
           >
-            <ChevronLeft size={24} />
+            arrow_back
           </button>
-          <h2 className="text-2xl font-bold text-gray-900">
-            {isNew || isRecording ? 'Live Meeting' : `Meeting Details #${meetingId || id}`}
-          </h2>
+          <div>
+            <h2 className="font-headline-sm text-on-surface">
+              {isNew || isRecording ? 'Live Meeting' : meetingDetails?.title || `Meeting #${meetingId || id}`}
+            </h2>
+            <p className="text-xs text-on-surface-variant">
+              {meetingDetails?.start_time ? new Date(meetingDetails.start_time).toLocaleString() : 'Active session'}
+            </p>
+          </div>
           {isRecording && (
-            <span className="flex items-center gap-2 px-3 py-1 bg-red-50 text-red-600 text-sm font-medium rounded-full animate-pulse">
-              <span className="w-2 h-2 bg-red-600 rounded-full"></span> Live
+            <span className="flex items-center gap-1.5 px-2.5 py-0.5 bg-error/10 text-error text-[10px] font-bold rounded-full border border-error/20 ai-pulse">
+              <span className="w-1.5 h-1.5 bg-error rounded-full"></span> LIVE
             </span>
           )}
         </div>
         
-        <div className="flex gap-3">
+        <div className="flex gap-sm w-full sm:w-auto">
           {(isNew || isRecording) && (
             <button
               onClick={toggleRecording}
-              className={`flex items-center gap-2 px-6 py-2.5 rounded-lg font-medium transition-all shadow-sm ${
+              className={`flex-1 sm:flex-initial flex items-center justify-center gap-sm px-6 py-2.5 rounded-xl font-semibold transition-all shadow-sm ${
                 isRecording 
-                  ? 'bg-red-600 hover:bg-red-700 text-white' 
-                  : 'bg-indigo-600 hover:bg-indigo-700 text-white'
+                  ? 'bg-error text-on-error hover:opacity-90 active:scale-95' 
+                  : 'bg-gradient-to-r from-[#6D5EF7] to-[#00D4FF] text-white primary-glow hover:opacity-90 active:scale-95'
               }`}
             >
-              {isRecording ? <Square size={20} /> : <Mic size={20} />}
+              <span className="material-symbols-outlined">
+                {isRecording ? 'stop' : 'mic'}
+              </span>
               {isRecording ? 'Stop Recording' : 'Start Recording'}
             </button>
           )}
           {!isNew && !isRecording && (
-             <div className="flex gap-2">
-               <button onClick={handleSendEmail} className="flex items-center gap-2 px-4 py-2.5 bg-indigo-100 text-indigo-700 rounded-lg hover:bg-indigo-200 transition-colors font-medium">
-                 <Mail size={20} /> Email Report
-               </button>
-               <button onClick={handleExportPDF} className="flex items-center gap-2 px-4 py-2.5 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors font-medium">
-                 <Download size={20} /> PDF Report
-               </button>
-             </div>
+            <div className="flex gap-sm w-full sm:w-auto">
+              <button 
+                onClick={handleSendEmail} 
+                className="flex-1 sm:flex-initial glass-card text-primary font-medium px-4 py-2.5 rounded-xl active:scale-95 transition-transform flex items-center justify-center gap-sm"
+              >
+                <span className="material-symbols-outlined">mail</span> Email Report
+              </button>
+              <button 
+                onClick={handleExportPDF} 
+                className="flex-1 sm:flex-initial bg-on-surface text-background font-semibold px-4 py-2.5 rounded-xl active:scale-95 transition-transform flex items-center justify-center gap-sm"
+              >
+                <span className="material-symbols-outlined">download</span> PDF Report
+              </button>
+            </div>
           )}
         </div>
       </div>
 
       {error && (
-        <div className="p-4 bg-red-50 text-red-600 rounded-lg">
+        <div className="p-md bg-error-container/20 text-error rounded-2xl border border-error-container/30 text-sm">
           {error}
         </div>
       )}
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-[calc(100vh-12rem)]">
-        {/* Live Transcript Panel */}
-        <div className="lg:col-span-2 flex flex-col bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-          <div className="p-4 border-b border-gray-100 bg-gray-50/80">
-            <h3 className="font-semibold text-gray-800 flex items-center gap-2">
-              <Mic size={18} className="text-indigo-500" /> Transcript
-            </h3>
+      {/* Grid Layout */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-md">
+        {/* Transcript Panel */}
+        <div className="lg:col-span-2 flex flex-col glass-card rounded-2xl overflow-hidden min-h-[400px] lg:min-h-[500px]">
+          <div className="p-md border-b border-white/10 flex items-center gap-sm bg-white/5">
+            <span className="material-symbols-outlined text-primary">forum</span>
+            <h3 className="font-semibold text-sm">Transcript</h3>
           </div>
-          <div className="flex-1 overflow-y-auto p-6 space-y-4 bg-white scroll-smooth">
+          <div className="flex-1 p-md overflow-y-auto space-y-md max-h-[500px]">
             {displayTranscript.length === 0 ? (
-              <div className="h-full flex items-center justify-center text-gray-400 italic">
-                {isNew ? 'Press "Start Recording" to begin...' : 'No transcript available.'}
+              <div className="h-full flex flex-col items-center justify-center text-on-surface-variant italic text-sm p-xl text-center">
+                <span className="material-symbols-outlined text-3xl mb-sm not-italic">mic_none</span>
+                {isNew ? 'Press "Start Recording" to begin transcribing...' : 'No transcript text was saved for this meeting.'}
               </div>
             ) : (
               displayTranscript.map((item) => (
-                <div key={item.id} className="animate-fade-in-up">
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">{item.speaker}</span>
+                <div key={item.id} className="space-y-1">
+                  <div className="flex items-center gap-sm">
+                    <span className="text-[10px] font-bold text-primary uppercase tracking-wider">{item.speaker}</span>
                   </div>
-                  <p className="text-lg leading-relaxed p-3 rounded-xl inline-block text-gray-800 bg-indigo-50/50">
+                  <div className="p-md bg-white/5 rounded-2xl border border-white/5 inline-block text-sm max-w-[90%] text-on-surface">
                     {item.text}
-                  </p>
+                  </div>
                 </div>
               ))
             )}
@@ -177,44 +190,49 @@ export default function MeetingRoom({ isNew }) {
           </div>
         </div>
 
-        {/* AI Analysis Panel */}
-        <div className="flex flex-col gap-6">
-          <div className="flex-1 flex flex-col bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-             <div className="p-4 border-b border-gray-100 bg-gray-50/80">
-              <h3 className="font-semibold text-gray-800 flex items-center gap-2">
-                <Send size={18} className="text-indigo-500" /> Summary
-              </h3>
+        {/* AI Insights Sidebar */}
+        <div className="flex flex-col gap-md">
+          {/* Summary Card */}
+          <div className="flex-1 flex flex-col glass-card rounded-2xl overflow-hidden min-h-[200px]">
+            <div className="p-md border-b border-white/10 flex items-center gap-sm bg-white/5">
+              <span className="material-symbols-outlined text-tertiary">auto_awesome</span>
+              <h3 className="font-semibold text-sm">Summary</h3>
             </div>
-            <div className="flex-1 p-6 overflow-y-auto bg-gradient-to-b from-white to-gray-50/30">
-               <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">{displaySummary}</p>
+            <div className="flex-1 p-md overflow-y-auto max-h-[250px]">
+              <p className="text-sm text-on-surface-variant leading-relaxed whitespace-pre-wrap">
+                {displaySummary}
+              </p>
             </div>
           </div>
 
-          <div className="flex-1 flex flex-col bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-            <div className="p-4 border-b border-gray-100 bg-gray-50/80">
-              <h3 className="font-semibold text-gray-800 flex items-center gap-2">
-                <CheckCircle size={18} className="text-indigo-500" /> Action Items
-              </h3>
+          {/* Action Items Card */}
+          <div className="flex-1 flex flex-col glass-card rounded-2xl overflow-hidden min-h-[250px]">
+            <div className="p-md border-b border-white/10 flex items-center gap-sm bg-white/5">
+              <span className="material-symbols-outlined text-secondary">task_alt</span>
+              <h3 className="font-semibold text-sm">Action Items</h3>
             </div>
-            <div className="flex-1 p-6 overflow-y-auto">
-               {displayActionItems.length === 0 ? (
-                 <p className="text-gray-500 italic text-sm">No action items detected yet...</p>
-               ) : (
-                 <ul className="space-y-3">
-                   {displayActionItems.map((item, i) => (
-                     <li key={i} className="flex items-start gap-3 p-3 bg-blue-50/50 rounded-lg border border-blue-100/50">
-                       <div className="mt-0.5"><CheckCircle size={16} className="text-blue-500" /></div>
-                       <div>
-                         <p className="text-sm font-medium text-gray-900">{item.task}</p>
-                         <div className="flex gap-2 mt-1">
-                           <span className="text-xs bg-white px-2 py-0.5 rounded text-gray-600 font-medium shadow-sm border border-gray-100">@{item.owner}</span>
-                           <span className="text-xs bg-white px-2 py-0.5 rounded text-red-600 font-medium shadow-sm border border-gray-100">{item.deadline}</span>
-                         </div>
-                       </div>
-                     </li>
-                   ))}
-                 </ul>
-               )}
+            <div className="flex-1 p-md overflow-y-auto max-h-[300px]">
+              {displayActionItems.length === 0 ? (
+                <div className="h-full flex flex-col items-center justify-center text-on-surface-variant italic text-xs p-md text-center">
+                  <span className="material-symbols-outlined text-2xl mb-xs not-italic">playlist_add_check</span>
+                  No action items extracted yet.
+                </div>
+              ) : (
+                <ul className="space-y-sm">
+                  {displayActionItems.map((item, i) => (
+                    <li key={i} className="p-md bg-white/5 rounded-xl border border-white/5 flex gap-sm">
+                      <span className="material-symbols-outlined text-secondary text-sm shrink-0">check_circle</span>
+                      <div className="space-y-1">
+                        <p className="text-xs font-medium text-on-surface">{item.task}</p>
+                        <div className="flex flex-wrap gap-xs">
+                          <span className="text-[9px] bg-white/10 px-2 py-0.5 rounded-full text-on-surface-variant font-bold border border-white/5">@{item.owner}</span>
+                          <span className="text-[9px] bg-error/10 px-2 py-0.5 rounded-full text-error font-bold border border-error/10">{item.deadline}</span>
+                        </div>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              )}
             </div>
           </div>
         </div>
@@ -222,3 +240,4 @@ export default function MeetingRoom({ isNew }) {
     </div>
   );
 }
+
